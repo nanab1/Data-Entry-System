@@ -1,0 +1,47 @@
+# Vehicle Info Flask App
+
+This is a Flask application for managing vehicle information.
+
+## Getting Started
+
+Follow these instructions to set up and run the project on your local machine.
+
+### Prerequisites
+
+- Python 3.x
+- Git
+
+### Installation
+
+1. **Clone the repository**
+
+   ```sh
+   git clone <repository-url>
+   cd <repository-directory>
+
+2. **Create and actiivate virtual environment**
+
+    on windows
+    ```sh
+        python -m venv venv
+        venv\Scripts\activate
+    ```
+
+
+    on MacOS/Linux
+    ```sh
+        python3 -m venv venv
+        source venv/bin/activate
+    ```
+
+
+
+    Install the required packages
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+3. **Run application**
+    
+    ```sh
+    python app.py

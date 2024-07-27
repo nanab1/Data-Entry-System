@@ -1,24 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_sqlalchemy import SQLAlchemy
-from .models import Security, VehicleInfo
+
+from api.models import db, Security, VehicleInfo
 # from flask_migrate import Migrate
 import os
-username = "postgres"
-password = "kojo1234"
-database = "rtsms_db"
 
 
 app = Flask(__name__)
 app.secret_key = "secret-key"
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{username}:{password}@localhost:5432/{database}"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # app.config.from_mapping()
 
-db = SQLAlchemy(app)
+
 
     
-# db.init_app(app)
+db.init_app(app)
 # migrate = Migrate(app, db)
 
 @app.route("/")
@@ -27,20 +24,37 @@ def home():
 
 @app.route("/view")
 def view():
-    return render_template("view.html", values = User.query.all())
+    return render_template("view.html", values = Security.query.all())
 
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        fullname = request.form['name']
+        sec_idNo = request.form['sec_idNo']
+        temp = fullname.split()
+        length = len(temp)
+        username = f"{temp[0][0]}{temp[-1]}"
+
+        new_user = Security(name=fullname, sec_idNo=sec_idNo, username=username)
+        db.session.add(new_user)
+        db.session.commit()
+        flash(f"Your username is {username}")
+        redirect(url_for("login"))
+    return render_template("signUp.html")
+    
 @app.route("/login" ,methods=['GET',"POST"])
 def login():
     if request.method == "POST":
         username=request.form['username']
-        sec_idNo=request.form['id']
+        sec_idNo=request.form['sec_idNo']
         location=request.form['location']
 
         print(username, location, id)
-        found_user = Security.query.filter_by(name=username).first()
+        found_user = Security.query.filter_by(username=username).first()
         if found_user:
             if sec_idNo == found_user.sec_idNo:
-                session['location'] = found_user.location
+                session['location'] = location
                 session['username'] = found_user.username
                 session['sec_idNo'] = found_user.sec_idNo
 
@@ -63,15 +77,15 @@ def record():
         
         if request.method == "POST":
             vehicleNumber = request.form["vehicleNumber"]
-            driverName = request.form["driverName"]
-            routeTo = request.form["routeTo"]
+            driverName = request.form["driver_name"]
+            routeTo = request.form["route_to"]
             post = session["location"]
 
-            vehicle_record = VehicleInfo(vehicleNumber=vehicleNumber, driverName=driverName, routeTo=routeTo, post=post).first()
+            vehicle_record = VehicleInfo(vehicle_number=vehicleNumber, driver_name=driverName, route_to=routeTo, post=post)
             db.session.add(vehicle_record)
             db.session.commit()
             flash("Record has been saved")
-        return render_template("user.html", location=location)
+        return render_template("monitoring_form.html", location=location)
     else:
         flash("You are not logged in!")
         return redirect(url_for("login"))
