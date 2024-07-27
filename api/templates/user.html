@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}User{% endblock%}
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p>{{msg}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith%}
+    <form action="" method="POST">
+        <input 
+            class="focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none w-auto text-sm leading-6 text-slate-900 placeholder-slate-400 rounded-md py-2  pl-2 ring-1 ring-slate-200 shadow-sm" 
+            type="email" 
+            id="email"
+            name="email"
+            placeholder="Enter email... " 
+            value="{{email if email}}"/>
+        <button type="submit" class="bg-indigo-600 text-white text-sm leading-6 font-medium py-2 px-3 rounded-lg" onclick="{{url_for('user')}}" >Submit</button>
+    </form>
+{% endblock%}
